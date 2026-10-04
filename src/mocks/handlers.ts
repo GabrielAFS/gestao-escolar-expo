@@ -4,12 +4,13 @@
  */
 import { http, HttpResponse } from "msw";
 import { seedSchools } from "./seed";
+import { SchoolInput } from "@/domain/types";
 
 let schools = structuredClone(seedSchools);
 export const handlers = [
   http.get("/schools", () => HttpResponse.json(schools)),
   http.post("/schools", async ({ request }) => {
-    const body = (await request.json()) as { name: string; address: string };
+    const body = (await request.json()) as SchoolInput;
     const school = {
       id: `school-${Date.now()}`,
       ...body,
@@ -26,6 +27,6 @@ export const handlers = [
       : HttpResponse.json({ message: "Not found" }, { status: 404 });
   }),
   http.get("/classes", () =>
-    HttpResponse.json(schools.flatMap((school) => school.classes)),
+    HttpResponse.json(schools.flatMap((school) => school.classes))
   ),
 ];

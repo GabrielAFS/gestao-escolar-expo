@@ -12,39 +12,45 @@ export default function SchoolFormScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const school = useSchoolStore((s) =>
-    s.schools.find((item) => item.id === id),
+    s.schools.find((item) => item.id === id)
   );
   const saveSchool = useSchoolStore((s) => s.saveSchool);
   const [name, setName] = useState(school?.name ?? "");
   const [address, setAddress] = useState(school?.address ?? "");
-  const [error, setError] = useState("");
+  const [error, setError] = useState({ name: "", address: "" });
   const [saving, setSaving] = useState(false);
+
   useEffect(() => {
     if (school) {
       setName(school.name);
       setAddress(school.address);
     }
   }, [school]);
+
   const submit = async () => {
-    const message = validateSchool({ name, address });
-    if (message) {
-      setError(message);
+    const errors = validateSchool({ name, address });
+
+    if (errors.name || errors.address) {
+      setError(errors);
       return;
     }
+
     setSaving(true);
-    setError("");
+    setError({ name: "", address: "" });
+
     try {
       await saveSchool({ name, address }, id);
       router.back();
     } catch (e) {
       Alert.alert(
         "Não foi possível salvar",
-        e instanceof Error ? e.message : "Tente novamente.",
+        e instanceof Error ? e.message : "Tente novamente."
       );
     } finally {
       setSaving(false);
     }
   };
+
   return (
     <Screen>
       <Pressable onPress={() => router.back()} style={styles.back}>
@@ -57,31 +63,30 @@ export default function SchoolFormScreen() {
       </Text>
       <View style={styles.form}>
         <Field
-          label="Nome da escola *"
+          label='Nome da escola *'
           value={name}
           onChangeText={setName}
-          placeholder="Ex.: Escola Municipal Aurora"
-          autoCapitalize="words"
-          error={error && !name.trim() ? error : undefined}
+          placeholder='Ex.: Escola Municipal Aurora'
+          autoCapitalize='words'
+          error={error.name ? error.name : undefined}
         />
         <Field
-          label="Endereço completo *"
+          label='Endereço completo *'
           value={address}
           onChangeText={setAddress}
-          placeholder="Rua, número, bairro"
-          autoCapitalize="sentences"
-          error={error && !address.trim() ? error : undefined}
+          placeholder='Rua, número, bairro'
+          autoCapitalize='sentences'
+          error={error.address ? error.address : undefined}
         />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
         <AppButton
           title={id ? "Salvar alterações" : "Cadastrar escola"}
           onPress={() => void submit()}
           loading={saving}
         />
         <AppButton
-          title="Cancelar"
+          title='Cancelar'
           onPress={() => router.back()}
-          variant="ghost"
+          variant='ghost'
           style={{ marginTop: 8 }}
         />
       </View>

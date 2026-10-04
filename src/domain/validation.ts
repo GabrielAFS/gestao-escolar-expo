@@ -1,9 +1,15 @@
 import type { ClassInput, SchoolInput } from "./types";
 
-export function validateSchool(input: SchoolInput): string | null {
-  if (!input.name.trim()) return "Informe o nome da escola.";
-  if (!input.address.trim()) return "Informe o endereço da escola.";
-  return null;
+export function validateSchool(input: SchoolInput): SchoolInput {
+  const errors: SchoolInput = {
+    name: "",
+    address: "",
+  };
+
+  if (!input.name.trim()) errors.name = "Informe o nome da escola.";
+  if (!input.address.trim()) errors.address = "Informe o endereço da escola.";
+
+  return errors;
 }
 
 export function validateClass(input: ClassInput): string | null {
