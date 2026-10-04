@@ -1,4 +1,4 @@
-export type Shift = 'Manhã' | 'Tarde' | 'Noite' | 'Integral';
+export type Shift = "Manhã" | "Tarde" | "Noite" | "Integral";
 
 export interface SchoolClass {
   id: string;
@@ -17,5 +17,5 @@ export interface School {
   classes: SchoolClass[];
 }
 
-export type SchoolInput = Pick<School, 'name' | 'address'>;
-export type ClassInput = Pick<SchoolClass, 'name' | 'shift' | 'schoolYear'>;
+export type SchoolInput = Pick<School, "name" | "address">;
+export type ClassInput = Pick<SchoolClass, "name" | "shift" | "schoolYear">;

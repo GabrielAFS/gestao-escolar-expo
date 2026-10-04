@@ -24,9 +24,9 @@ export default function SchoolsScreen() {
       schools.filter((school) =>
         `${school.name} ${school.address}`
           .toLowerCase()
-          .includes(query.trim().toLowerCase())
+          .includes(query.trim().toLowerCase()),
       ),
-    [schools, query]
+    [schools, query],
   );
   const confirmDelete = (id: string, name: string) =>
     Alert.alert("Excluir escola?", `“${name}” e suas turmas serão removidas.`, [
@@ -78,13 +78,13 @@ export default function SchoolsScreen() {
       <TextInput
         value={query}
         onChangeText={setQuery}
-        placeholder='Buscar por escola ou endereço'
-        placeholderTextColor='#89968F'
+        placeholder="Buscar por escola ou endereço"
+        placeholderTextColor="#89968F"
         style={styles.search}
-        accessibilityLabel='Buscar escolas'
+        accessibilityLabel="Buscar escolas"
       />
       <AppButton
-        title='+  Adicionar escola'
+        title="+  Adicionar escola"
         onPress={() => router.push("/school/form")}
         style={{ marginBottom: 18 }}
       />
@@ -125,7 +125,7 @@ export default function SchoolsScreen() {
               </View>
             </View>
             <Pressable
-              accessibilityRole='button'
+              accessibilityRole="button"
               accessibilityLabel={`Excluir ${school.name}`}
               onPress={() => confirmDelete(school.id, school.name)}
               hitSlop={8}

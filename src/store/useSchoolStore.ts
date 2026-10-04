@@ -16,7 +16,7 @@ interface SchoolState {
   saveClass: (
     schoolId: string,
     input: ClassInput,
-    classId?: string
+    classId?: string,
   ) => Promise<void>;
   removeClass: (classId: string) => Promise<void>;
 }
