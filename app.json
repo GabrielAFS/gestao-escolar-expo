@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "Gestão Escolar",
+    "slug": "gestao-escolar",
+    "scheme": "gestaoescolar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": ["expo-router"],
+    "experiments": { "typedRoutes": true },
+    "ios": { "supportsTablet": true },
+    "android": { "adaptiveIcon": { "backgroundColor": "#123B32" } }
+  }
+}
