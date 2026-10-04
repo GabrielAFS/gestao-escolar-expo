@@ -1,4 +1,4 @@
-import type { ClassInput, SchoolInput } from "./types";
+import type { ClassErrors, ClassInput, SchoolInput } from "./types";
 
 export function validateSchool(input: SchoolInput): SchoolInput {
   const errors: SchoolInput = {
@@ -12,14 +12,21 @@ export function validateSchool(input: SchoolInput): SchoolInput {
   return errors;
 }
 
-export function validateClass(input: ClassInput): string | null {
-  if (!input.name.trim()) return "Informe o nome da turma.";
+export function validateClass(input: ClassInput): ClassErrors {
+  const errors: ClassErrors = {
+    name: "",
+    schoolYear: "",
+    shift: "",
+  };
+
+  if (!input.name.trim()) errors.name = "Informe o nome da turma.";
   if (
     !Number.isInteger(input.schoolYear) ||
     input.schoolYear < 2000 ||
     input.schoolYear > 2100
   ) {
-    return "Informe um ano letivo válido.";
+    errors.schoolYear = "Informe um ano letivo válido.";
   }
-  return null;
+
+  return errors;
 }

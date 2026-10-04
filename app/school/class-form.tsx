@@ -6,10 +6,16 @@ import { Field } from "../../src/components/Field";
 import { AppButton } from "../../src/components/AppButton";
 import { colors, radius } from "../../src/theme/tokens";
 import { useSchoolStore } from "../../src/store/useSchoolStore";
-import type { Shift } from "../../src/domain/types";
+import type { ClassErrors, Shift } from "../../src/domain/types";
 import { validateClass } from "../../src/domain/validation";
 
 const shifts: Shift[] = ["Manhã", "Tarde", "Noite", "Integral"];
+const initialErrors: ClassErrors = {
+  name: "",
+  schoolYear: "",
+  shift: "",
+};
+
 export default function ClassFormScreen() {
   const router = useRouter();
   const { schoolId, classId } = useLocalSearchParams<{
@@ -17,42 +23,50 @@ export default function ClassFormScreen() {
     classId?: string;
   }>();
   const school = useSchoolStore((s) =>
-    s.schools.find((item) => item.id === schoolId),
+    s.schools.find((item) => item.id === schoolId)
   );
   const existing = school?.classes.find((item) => item.id === classId);
   const saveClass = useSchoolStore((s) => s.saveClass);
   const [name, setName] = useState(existing?.name ?? "");
   const [shift, setShift] = useState<Shift>(existing?.shift ?? "Manhã");
   const [year, setYear] = useState(
-    String(existing?.schoolYear ?? new Date().getFullYear()),
+    String(existing?.schoolYear ?? new Date().getFullYear())
   );
-  const [error, setError] = useState("");
+  const [error, setError] = useState<ClassErrors>(initialErrors);
+  const [globalError, setGlobalError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
   const submit = async () => {
     const input = { name, shift, schoolYear: Number(year) };
-    const message = validateClass(input);
-    if (message) {
-      setError(message);
+    const errors = validateClass(input);
+
+    if (errors) {
+      setError(errors);
       return;
     }
+
     if (!school) {
-      setError("Escola não encontrada.");
+      setGlobalError("Escola não encontrada.");
       return;
     }
+
     setSaving(true);
-    setError("");
+    setError(initialErrors);
+    setGlobalError(null);
+
     try {
       await saveClass(school.id, input, classId);
       router.back();
     } catch (e) {
       Alert.alert(
         "Não foi possível salvar",
-        e instanceof Error ? e.message : "Tente novamente.",
+        e instanceof Error ? e.message : "Tente novamente."
       );
     } finally {
       setSaving(false);
     }
   };
+
   return (
     <Screen>
       <Pressable onPress={() => router.back()} style={styles.back}>
@@ -69,11 +83,12 @@ export default function ClassFormScreen() {
       </Text>
       <View style={styles.form}>
         <Field
-          label="Nome da turma *"
+          label='Nome da turma *'
           value={name}
           onChangeText={setName}
-          placeholder="Ex.: 2º Ano A"
-          autoCapitalize="words"
+          placeholder='Ex.: 2º Ano A'
+          autoCapitalize='words'
+          error={error.name ? error.name : undefined}
         />
         <Text style={styles.label}>Turno *</Text>
         <View style={styles.shifts}>
@@ -95,29 +110,31 @@ export default function ClassFormScreen() {
           ))}
         </View>
         <Field
-          label="Ano letivo *"
+          label='Ano letivo *'
           value={year}
           onChangeText={setYear}
-          placeholder="2026"
-          keyboardType="number-pad"
+          placeholder='2026'
+          keyboardType='number-pad'
           maxLength={4}
+          error={error.schoolYear ? error.schoolYear : undefined}
         />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {globalError ? <Text style={styles.error}>{globalError}</Text> : null}
         <AppButton
           title={classId ? "Salvar alterações" : "Cadastrar turma"}
           onPress={() => void submit()}
           loading={saving}
         />
         <AppButton
-          title="Cancelar"
+          title='Cancelar'
           onPress={() => router.back()}
-          variant="ghost"
+          variant='ghost'
           style={{ marginTop: 8 }}
         />
       </View>
     </Screen>
   );
 }
+
 const styles = StyleSheet.create({
   back: { paddingVertical: 9, marginBottom: 28 },
   backText: { color: colors.primary, fontWeight: "700" },

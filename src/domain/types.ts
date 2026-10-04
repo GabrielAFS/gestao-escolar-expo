@@ -19,3 +19,5 @@ export interface School {
 
 export type SchoolInput = Pick<School, "name" | "address">;
 export type ClassInput = Pick<SchoolClass, "name" | "shift" | "schoolYear">;
+
+export type ClassErrors = Record<keyof ClassInput, string>;
