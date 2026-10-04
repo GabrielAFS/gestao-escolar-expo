@@ -1,5 +1,6 @@
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, ViewStyle } from "react-native";
+import { ScrollView, StyleSheet, ViewStyle } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { colors } from "../theme/tokens";
 
 export function Screen({
@@ -12,7 +13,7 @@ export function Screen({
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView
-        keyboardShouldPersistTaps="handled"
+        keyboardShouldPersistTaps='handled'
         contentContainerStyle={[styles.content, contentStyle]}
       >
         {children}
