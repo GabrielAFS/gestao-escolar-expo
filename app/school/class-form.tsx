@@ -40,7 +40,7 @@ export default function ClassFormScreen() {
     const input = { name, shift, schoolYear: Number(year) };
     const errors = validateClass(input);
 
-    if (errors) {
+    if (errors.name || errors.schoolYear || errors.shift) {
       setError(errors);
       return;
     }

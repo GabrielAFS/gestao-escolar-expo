@@ -1,12 +1,5 @@
 import React, { useMemo, useState } from "react";
-import {
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Alert, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Screen } from "../src/components/Screen";
 import { AppButton } from "../src/components/AppButton";
@@ -48,10 +41,6 @@ export default function SchoolsScreen() {
         </View>
         <Text style={styles.toplabel}>GESTÃO MUNICIPAL</Text>
         <View style={{ flex: 1 }} />
-        <View style={styles.live}>
-          <View style={styles.dot} />
-          <Text style={styles.liveText}>Offline pronto</Text>
-        </View>
       </View>
       <Text style={styles.eyebrow}>PAINEL DE CONTROLE</Text>
       <Text style={styles.title}>Suas escolas,{"\n"}em um só lugar.</Text>
