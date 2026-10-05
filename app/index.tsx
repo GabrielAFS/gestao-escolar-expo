@@ -12,6 +12,7 @@ import { Screen } from "../src/components/Screen";
 import { AppButton } from "../src/components/AppButton";
 import { colors, radius } from "../src/theme/tokens";
 import { useSchoolStore } from "../src/store/useSchoolStore";
+import { SchoolCard } from "@/components/SchoolCard";
 
 export default function SchoolsScreen() {
   const router = useRouter();
@@ -24,10 +25,11 @@ export default function SchoolsScreen() {
       schools.filter((school) =>
         `${school.name} ${school.address}`
           .toLowerCase()
-          .includes(query.trim().toLowerCase()),
+          .includes(query.trim().toLowerCase())
       ),
-    [schools, query],
+    [schools, query]
   );
+
   const confirmDelete = (id: string, name: string) =>
     Alert.alert("Excluir escola?", `“${name}” e suas turmas serão removidas.`, [
       { text: "Cancelar", style: "cancel" },
@@ -37,6 +39,7 @@ export default function SchoolsScreen() {
         onPress: () => void removeSchool(id),
       },
     ]);
+
   return (
     <Screen>
       <View style={styles.topline}>
@@ -78,13 +81,13 @@ export default function SchoolsScreen() {
       <TextInput
         value={query}
         onChangeText={setQuery}
-        placeholder="Buscar por escola ou endereço"
-        placeholderTextColor="#89968F"
+        placeholder='Buscar por escola ou endereço'
+        placeholderTextColor='#89968F'
         style={styles.search}
-        accessibilityLabel="Buscar escolas"
+        accessibilityLabel='Buscar escolas'
       />
       <AppButton
-        title="+  Adicionar escola"
+        title='+  Adicionar escola'
         onPress={() => router.push("/school/form")}
         style={{ marginBottom: 18 }}
       />
@@ -98,48 +101,19 @@ export default function SchoolsScreen() {
         </View>
       ) : (
         filtered.map((school) => (
-          <Pressable
+          <SchoolCard
             key={school.id}
+            school={school}
             onPress={() => router.push(`/school/${school.id}`)}
-            style={({ pressed }) => [
-              styles.schoolCard,
-              pressed && { opacity: 0.85 },
-            ]}
-          >
-            <View style={styles.schoolIcon}>
-              <Text style={styles.schoolIconText}>⌂</Text>
-            </View>
-            <View style={styles.schoolInfo}>
-              <Text style={styles.schoolName}>{school.name}</Text>
-              <Text style={styles.address} numberOfLines={2}>
-                {school.address}
-              </Text>
-              <View style={styles.cardFooter}>
-                <View style={styles.pill}>
-                  <Text style={styles.pillText}>
-                    {school.classes.length}{" "}
-                    {school.classes.length === 1 ? "turma" : "turmas"}
-                  </Text>
-                </View>
-                <Text style={styles.openText}>Ver detalhes ›</Text>
-              </View>
-            </View>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Excluir ${school.name}`}
-              onPress={() => confirmDelete(school.id, school.name)}
-              hitSlop={8}
-              style={styles.more}
-            >
-              <Text style={styles.moreText}>•••</Text>
-            </Pressable>
-          </Pressable>
+            onDelete={() => confirmDelete(school.id, school.name)}
+          />
         ))
       )}
       <Text style={styles.footer}>GESTÃO ESCOLAR · VERSÃO 1.0</Text>
     </Screen>
   );
 }
+
 const styles = StyleSheet.create({
   topline: {
     flexDirection: "row",
