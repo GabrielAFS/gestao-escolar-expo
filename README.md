@@ -4,7 +4,7 @@ Aplicativo multiplataforma para cadastro de escolas públicas e gerenciamento de
 
 ## Requisitos atendidos
 
-- Expo SDK 54, React 19, React Native 0.81 e TypeScript estrito.
+- Expo SDK 57, React 19, React Native 0.86 e TypeScript estrito.
 - Navegação por Expo Router.
 - Componentes de interface com Gluestack UI (dependência incluída; a tela utiliza componentes React Native acessíveis e estilizados para manter o app leve).
 - Estado global com Zustand.
@@ -16,9 +16,8 @@ Aplicativo multiplataforma para cadastro de escolas públicas e gerenciamento de
 
 ## Requisitos
 
-- Node.js 20.19.x ou superior compatível com Expo SDK 54
-- npm
-- Expo Go compatível com SDK 54 ou emulador Android/iOS
+- Node.js 20.19.x ou superior compatível com Expo SDK 57
+- Expo Go compatível com SDK 57 ou emulador Android/iOS
 
 ## Instalação e execução
 
@@ -58,11 +57,3 @@ src/
   store/               # Zustand + persistência
   theme/               # tokens visuais
 ```
-
-## Decisões técnicas
-
-- Organização por domínio, separando UI, estado, validação e serviços.
-- Identificadores gerados no cliente para manter o fluxo offline.
-- O armazenamento local é a fonte de persistência no app; os dados de demonstração são carregados apenas quando o armazenamento está vazio.
-- As operações de exclusão de escola removem também as turmas vinculadas.
-- Para publicar no GitHub, crie um repositório público e envie o conteúdo deste projeto. O repositório não é criado automaticamente por este pacote.
