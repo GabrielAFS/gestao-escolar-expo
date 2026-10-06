@@ -1,5 +1,11 @@
 module.exports = {
-  preset: 'jest-expo',
-  testMatch: ['**/__tests__/**/*.test.ts'],
-  clearMocks: true
+  testEnvironment: "node",
+  testMatch: ["**/src/tests/**/*.test.ts"],
+  clearMocks: true,
+  transform: {
+    "\\.[jt]sx?$": "babel-jest",
+  },
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1",
+  },
 };

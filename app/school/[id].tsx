@@ -1,31 +1,34 @@
 import React, { useMemo, useState } from "react";
 import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Box, HStack, Pressable, Text, VStack } from "@gluestack-ui/themed";
+import { Box, HStack, Pressable, Text } from "@gluestack-ui/themed";
 import { Screen } from "../../src/components/Screen";
 import { AppButton } from "../../src/components/AppButton";
-import { colors, radius } from "../../src/theme/tokens";
+import { colors } from "../../src/theme/tokens";
 import { useSchoolStore } from "../../src/store/useSchoolStore";
+import { filterClasses, countSchoolYears } from "../../src/utils/school";
+import {
+  ClassCard,
+  ClassesEmptyState,
+  SchoolStats,
+  ShiftFilter,
+} from "../../src/features/schools/components";
 import type { Shift } from "../../src/domain/types";
-
-const shifts: Shift[] = ["Manhã", "Tarde", "Noite", "Integral"];
 
 export default function SchoolDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const school = useSchoolStore((s) =>
-    s.schools.find((item) => item.id === id),
+  const school = useSchoolStore((state) =>
+    state.schools.find((item) => item.id === id),
   );
-  const removeClass = useSchoolStore((s) => s.removeClass);
+  const removeClass = useSchoolStore((state) => state.removeClass);
   const [shift, setShift] = useState<Shift | "Todas">("Todas");
   const classes = useMemo(
-    () =>
-      (school?.classes ?? []).filter(
-        (item) => shift === "Todas" || item.shift === shift,
-      ),
+    () => filterClasses(school?.classes ?? [], shift),
     [school, shift],
   );
-  if (!school)
+
+  if (!school) {
     return (
       <Screen>
         <Text
@@ -39,6 +42,8 @@ export default function SchoolDetailsScreen() {
         <AppButton title="Voltar" onPress={() => router.replace("/")} />
       </Screen>
     );
+  }
+
   const confirmDelete = (classId: string, name: string) =>
     Alert.alert("Excluir turma?", `Deseja remover “${name}”?`, [
       { text: "Cancelar", style: "cancel" },
@@ -48,6 +53,7 @@ export default function SchoolDetailsScreen() {
         onPress: () => void removeClass(classId),
       },
     ]);
+
   return (
     <Screen>
       <Pressable onPress={() => router.back()} py={9} mb={24}>
@@ -90,32 +96,13 @@ export default function SchoolDetailsScreen() {
         ⌖ {school.address}
       </Text>
 
-      <HStack
-        bg={colors.primaryDark}
-        p={19}
-        borderRadius={radius.lg}
-        alignItems="center"
-        mt={23}
-        mb={18}
-      >
-        <VStack flex={1}>
-          <Text color="#fff" fontSize={26} fontWeight="$extrabold">
-            {school.classes.length}
-          </Text>
-          <Text color="#C6DED4" fontSize={11} mt={3}>
-            Turmas cadastradas
-          </Text>
-        </VStack>
-        <Box width={1} height={42} bg="#477568" mx={30} />
-        <VStack flex={1}>
-          <Text color="#fff" fontSize={26} fontWeight="$extrabold">
-            {new Set(school.classes.map((item) => item.schoolYear)).size || 0}
-          </Text>
-          <Text color="#C6DED4" fontSize={11} mt={3}>
-            Anos letivos
-          </Text>
-        </VStack>
-      </HStack>
+      <SchoolStats
+        schoolCount={school.classes.length}
+        classCount={countSchoolYears(school.classes)}
+        label="Turmas cadastradas"
+        secondaryLabel="Anos letivos"
+        variant="details"
+      />
 
       <HStack space="sm" mb={30}>
         <Box flex={1}>
@@ -151,106 +138,24 @@ export default function SchoolDetailsScreen() {
           {classes.length} de {school.classes.length}
         </Text>
       </HStack>
-      <HStack flexWrap="wrap" space="sm" mb={14}>
-        {(["Todas", ...shifts] as const).map((item) => (
-          <Pressable
-            key={item}
-            onPress={() => setShift(item)}
-            borderRadius={30}
-            px={13}
-            py={8}
-            bg={shift === item ? colors.primary : "#E9EEEA"}
-          >
-            <Text
-              color={shift === item ? "#fff" : colors.muted}
-              fontSize={11}
-              fontWeight="$bold"
-            >
-              {item}
-            </Text>
-          </Pressable>
-        ))}
-      </HStack>
+
+      <ShiftFilter value={shift} onChange={setShift} />
 
       {classes.length === 0 ? (
-        <VStack bg="#fff" p={25} borderRadius={18} alignItems="center">
-          <Text fontWeight="$extrabold" color={colors.text} fontSize={15}>
-            {school.classes.length
-              ? "Nenhuma turma neste turno"
-              : "Ainda não há turmas"}
-          </Text>
-          <Text
-            textAlign="center"
-            color={colors.muted}
-            fontSize={12}
-            lineHeight={18}
-            mt={7}
-          >
-            Cadastre uma turma para começar a organizar o ano letivo.
-          </Text>
-        </VStack>
+        <ClassesEmptyState hasClasses={school.classes.length > 0} />
       ) : (
         classes.map((item) => (
-          <HStack
+          <ClassCard
             key={item.id}
-            alignItems="center"
-            space="sm"
-            bg="#fff"
-            p={13}
-            borderRadius={16}
-            borderWidth={1}
-            borderColor={colors.border}
-            mb={10}
-          >
-            <Box
-              width={40}
-              height={40}
-              borderRadius={13}
-              bg="#F1F5F2"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text color={colors.primary} fontSize={20}>
-                ▤
-              </Text>
-            </Box>
-            <VStack flex={1}>
-              <Text fontWeight="$extrabold" color={colors.text} fontSize={14}>
-                {item.name}
-              </Text>
-              <Text color={colors.muted} fontSize={11} mt={5}>
-                {item.shift} · Ano letivo {item.schoolYear}
-              </Text>
-            </VStack>
-            <Pressable
-              accessibilityLabel={`Editar ${item.name}`}
-              onPress={() =>
-                router.push({
-                  pathname: "/school/class-form",
-                  params: { schoolId: school.id, classId: item.id },
-                })
-              }
-              p={7}
-            >
-              <Text color={colors.primary} fontSize={12} fontWeight="$bold">
-                Editar
-              </Text>
-            </Pressable>
-            <Pressable
-              accessibilityLabel={`Excluir ${item.name}`}
-              onPress={() => confirmDelete(item.id, item.name)}
-              width={28}
-              height={28}
-              borderRadius={10}
-              bg={colors.dangerBg}
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Text color={colors.danger} fontSize={20}>
-                ×
-              </Text>
-            </Pressable>
-          </HStack>
+            item={item}
+            onEdit={() =>
+              router.push({
+                pathname: "/school/class-form",
+                params: { schoolId: school.id, classId: item.id },
+              })
+            }
+            onDelete={() => confirmDelete(item.id, item.name)}
+          />
         ))
       )}
     </Screen>
