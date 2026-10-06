@@ -13,7 +13,7 @@ export function Screen({
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView
-        keyboardShouldPersistTaps='handled'
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={[styles.content, contentStyle]}
       >
         {children}

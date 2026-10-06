@@ -1,11 +1,14 @@
 import React from "react";
+import { TextInputProps } from "react-native";
 import {
-  StyleSheet,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  Input,
+  InputField,
   Text,
-  TextInput,
-  TextInputProps,
-  View,
-} from "react-native";
+  VStack,
+} from "@gluestack-ui/themed";
 import { colors, radius } from "../theme/tokens";
 
 export function Field({
@@ -14,36 +17,41 @@ export function Field({
   ...props
 }: TextInputProps & { label: string; error?: string }) {
   return (
-    <View style={styles.wrap}>
-      <Text style={styles.label}>{label}</Text>
-      <TextInput
-        placeholderTextColor="#9AA69F"
-        {...props}
-        style={[
-          styles.input,
-          props.multiline && styles.multiline,
-          error && styles.invalid,
-          props.style,
-        ]}
-      />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-    </View>
+    <FormControl isInvalid={Boolean(error)} mb="$4">
+      <VStack space="xs">
+        <FormControlLabel>
+          <FormControlLabelText
+            fontSize={13}
+            fontWeight="$bold"
+            color={colors.text}
+          >
+            {label}
+          </FormControlLabelText>
+        </FormControlLabel>
+        <Input
+          minHeight={50}
+          bg={colors.surface}
+          borderWidth={1}
+          borderColor={error ? colors.danger : colors.border}
+          borderRadius={radius.md}
+          px={14}
+        >
+          <InputField
+            {...props}
+            placeholderTextColor="#9AA69F"
+            color={colors.text}
+            fontSize={15}
+            {...(props.multiline
+              ? { minHeight: 78, py: 13, textAlignVertical: "top" as const }
+              : { py: 0 })}
+          />
+        </Input>
+        {error ? (
+          <Text color={colors.danger} fontSize={12}>
+            {error}
+          </Text>
+        ) : null}
+      </VStack>
+    </FormControl>
   );
 }
-const styles = StyleSheet.create({
-  wrap: { gap: 7, marginBottom: 17 },
-  label: { fontSize: 13, fontWeight: "700", color: colors.text },
-  input: {
-    minHeight: 50,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: 14,
-    color: colors.text,
-    fontSize: 15,
-  },
-  multiline: { minHeight: 78, paddingTop: 13, textAlignVertical: "top" },
-  invalid: { borderColor: colors.danger },
-  error: { color: colors.danger, fontSize: 12 },
-});

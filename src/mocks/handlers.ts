@@ -27,6 +27,6 @@ export const handlers = [
       : HttpResponse.json({ message: "Not found" }, { status: 404 });
   }),
   http.get("/classes", () =>
-    HttpResponse.json(schools.flatMap((school) => school.classes))
+    HttpResponse.json(schools.flatMap((school) => school.classes)),
   ),
 ];

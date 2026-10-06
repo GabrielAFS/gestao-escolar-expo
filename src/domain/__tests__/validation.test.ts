@@ -20,13 +20,13 @@ describe("validação de escola", () => {
 describe("validação de turma", () => {
   it("valida nome e ano letivo", () => {
     expect(validateClass({ name: "", shift: "Manhã", schoolYear: 2026 })).toBe(
-      "Informe o nome da turma."
+      "Informe o nome da turma.",
     );
     expect(
-      validateClass({ name: "1º A", shift: "Manhã", schoolYear: 1800 })
+      validateClass({ name: "1º A", shift: "Manhã", schoolYear: 1800 }),
     ).toBe("Informe um ano letivo válido.");
     expect(
-      validateClass({ name: "1º A", shift: "Manhã", schoolYear: 2026 })
+      validateClass({ name: "1º A", shift: "Manhã", schoolYear: 2026 }),
     ).toBeNull();
   });
 });

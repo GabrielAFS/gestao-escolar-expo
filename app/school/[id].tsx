@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { Box, HStack, Pressable, Text, VStack } from "@gluestack-ui/themed";
 import { Screen } from "../../src/components/Screen";
 import { AppButton } from "../../src/components/AppButton";
 import { colors, radius } from "../../src/theme/tokens";
@@ -8,6 +9,7 @@ import { useSchoolStore } from "../../src/store/useSchoolStore";
 import type { Shift } from "../../src/domain/types";
 
 const shifts: Shift[] = ["Manhã", "Tarde", "Noite", "Integral"];
+
 export default function SchoolDetailsScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -26,7 +28,14 @@ export default function SchoolDetailsScreen() {
   if (!school)
     return (
       <Screen>
-        <Text style={styles.title}>Escola não encontrada</Text>
+        <Text
+          color={colors.text}
+          fontSize={29}
+          lineHeight={35}
+          fontWeight="$extrabold"
+        >
+          Escola não encontrada
+        </Text>
         <AppButton title="Voltar" onPress={() => router.replace("/")} />
       </Screen>
     );
@@ -41,30 +50,75 @@ export default function SchoolDetailsScreen() {
     ]);
   return (
     <Screen>
-      <Pressable onPress={() => router.back()} style={styles.back}>
-        <Text style={styles.backText}>‹ Todas as escolas</Text>
+      <Pressable onPress={() => router.back()} py={9} mb={24}>
+        <Text color={colors.primary} fontWeight="$bold">
+          ‹ Todas as escolas
+        </Text>
       </Pressable>
-      <View style={styles.heroIcon}>
-        <Text style={styles.heroIconText}>⌂</Text>
-      </View>
-      <Text style={styles.eyebrow}>UNIDADE ESCOLAR</Text>
-      <Text style={styles.title}>{school.name}</Text>
-      <Text style={styles.address}>⌖ {school.address}</Text>
-      <View style={styles.summary}>
-        <View>
-          <Text style={styles.summaryNum}>{school.classes.length}</Text>
-          <Text style={styles.summaryLabel}>Turmas cadastradas</Text>
-        </View>
-        <View style={styles.summaryLine} />
-        <View>
-          <Text style={styles.summaryNum}>
+      <Box
+        width={54}
+        height={54}
+        borderRadius={18}
+        bg={colors.accent}
+        alignItems="center"
+        justifyContent="center"
+        mb={20}
+      >
+        <Text color={colors.primary} fontSize={30}>
+          ⌂
+        </Text>
+      </Box>
+      <Text
+        color={colors.primary}
+        fontSize={10}
+        letterSpacing={1.6}
+        fontWeight="$black"
+        mb={8}
+      >
+        UNIDADE ESCOLAR
+      </Text>
+      <Text
+        fontSize={29}
+        lineHeight={35}
+        fontWeight="$extrabold"
+        letterSpacing={-0.8}
+        color={colors.text}
+      >
+        {school.name}
+      </Text>
+      <Text color={colors.muted} fontSize={13} lineHeight={20} mt={9}>
+        ⌖ {school.address}
+      </Text>
+
+      <HStack
+        bg={colors.primaryDark}
+        p={19}
+        borderRadius={radius.lg}
+        alignItems="center"
+        mt={23}
+        mb={18}
+      >
+        <VStack flex={1}>
+          <Text color="#fff" fontSize={26} fontWeight="$extrabold">
+            {school.classes.length}
+          </Text>
+          <Text color="#C6DED4" fontSize={11} mt={3}>
+            Turmas cadastradas
+          </Text>
+        </VStack>
+        <Box width={1} height={42} bg="#477568" mx={30} />
+        <VStack flex={1}>
+          <Text color="#fff" fontSize={26} fontWeight="$extrabold">
             {new Set(school.classes.map((item) => item.schoolYear)).size || 0}
           </Text>
-          <Text style={styles.summaryLabel}>Anos letivos</Text>
-        </View>
-      </View>
-      <View style={styles.actions}>
-        <View style={{ flex: 1 }}>
+          <Text color="#C6DED4" fontSize={11} mt={3}>
+            Anos letivos
+          </Text>
+        </VStack>
+      </HStack>
+
+      <HStack space="sm" mb={30}>
+        <Box flex={1}>
           <AppButton
             title="Editar escola"
             variant="secondary"
@@ -75,8 +129,8 @@ export default function SchoolDetailsScreen() {
               })
             }
           />
-        </View>
-        <View style={{ flex: 1 }}>
+        </Box>
+        <Box flex={1}>
           <AppButton
             title="+ Nova turma"
             onPress={() =>
@@ -86,55 +140,88 @@ export default function SchoolDetailsScreen() {
               })
             }
           />
-        </View>
-      </View>
-      <View style={styles.heading}>
-        <Text style={styles.sectionTitle}>Turmas da unidade</Text>
-        <Text style={styles.count}>
+        </Box>
+      </HStack>
+
+      <HStack alignItems="center" justifyContent="space-between" mb={14}>
+        <Text fontSize={19} color={colors.text} fontWeight="$extrabold">
+          Turmas da unidade
+        </Text>
+        <Text fontSize={12} color={colors.muted}>
           {classes.length} de {school.classes.length}
         </Text>
-      </View>
-      <View style={styles.filters}>
+      </HStack>
+      <HStack flexWrap="wrap" space="sm" mb={14}>
         {(["Todas", ...shifts] as const).map((item) => (
           <Pressable
             key={item}
             onPress={() => setShift(item)}
-            style={[styles.filter, shift === item && styles.filterActive]}
+            borderRadius={30}
+            px={13}
+            py={8}
+            bg={shift === item ? colors.primary : "#E9EEEA"}
           >
             <Text
-              style={[
-                styles.filterText,
-                shift === item && styles.filterTextActive,
-              ]}
+              color={shift === item ? "#fff" : colors.muted}
+              fontSize={11}
+              fontWeight="$bold"
             >
               {item}
             </Text>
           </Pressable>
         ))}
-      </View>
+      </HStack>
+
       {classes.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyTitle}>
+        <VStack bg="#fff" p={25} borderRadius={18} alignItems="center">
+          <Text fontWeight="$extrabold" color={colors.text} fontSize={15}>
             {school.classes.length
               ? "Nenhuma turma neste turno"
               : "Ainda não há turmas"}
           </Text>
-          <Text style={styles.emptyText}>
+          <Text
+            textAlign="center"
+            color={colors.muted}
+            fontSize={12}
+            lineHeight={18}
+            mt={7}
+          >
             Cadastre uma turma para começar a organizar o ano letivo.
           </Text>
-        </View>
+        </VStack>
       ) : (
         classes.map((item) => (
-          <View key={item.id} style={styles.classCard}>
-            <View style={styles.classIcon}>
-              <Text style={styles.classIconText}>▤</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.className}>{item.name}</Text>
-              <Text style={styles.classMeta}>
+          <HStack
+            key={item.id}
+            alignItems="center"
+            space="sm"
+            bg="#fff"
+            p={13}
+            borderRadius={16}
+            borderWidth={1}
+            borderColor={colors.border}
+            mb={10}
+          >
+            <Box
+              width={40}
+              height={40}
+              borderRadius={13}
+              bg="#F1F5F2"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Text color={colors.primary} fontSize={20}>
+                ▤
+              </Text>
+            </Box>
+            <VStack flex={1}>
+              <Text fontWeight="$extrabold" color={colors.text} fontSize={14}>
+                {item.name}
+              </Text>
+              <Text color={colors.muted} fontSize={11} mt={5}>
                 {item.shift} · Ano letivo {item.schoolYear}
               </Text>
-            </View>
+            </VStack>
             <Pressable
               accessibilityLabel={`Editar ${item.name}`}
               onPress={() =>
@@ -143,132 +230,29 @@ export default function SchoolDetailsScreen() {
                   params: { schoolId: school.id, classId: item.id },
                 })
               }
-              style={styles.smallAction}
+              p={7}
             >
-              <Text style={styles.smallActionText}>Editar</Text>
+              <Text color={colors.primary} fontSize={12} fontWeight="$bold">
+                Editar
+              </Text>
             </Pressable>
             <Pressable
               accessibilityLabel={`Excluir ${item.name}`}
               onPress={() => confirmDelete(item.id, item.name)}
-              style={styles.delete}
+              width={28}
+              height={28}
+              borderRadius={10}
+              bg={colors.dangerBg}
+              alignItems="center"
+              justifyContent="center"
             >
-              <Text style={styles.deleteText}>×</Text>
+              <Text color={colors.danger} fontSize={20}>
+                ×
+              </Text>
             </Pressable>
-          </View>
+          </HStack>
         ))
       )}
     </Screen>
   );
 }
-const styles = StyleSheet.create({
-  back: { paddingVertical: 9, marginBottom: 24 },
-  backText: { color: colors.primary, fontWeight: "700" },
-  heroIcon: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
-    backgroundColor: colors.accent,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  heroIconText: { color: colors.primary, fontSize: 30 },
-  eyebrow: {
-    color: colors.primary,
-    fontSize: 10,
-    letterSpacing: 1.6,
-    fontWeight: "900",
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 29,
-    lineHeight: 35,
-    fontWeight: "800",
-    letterSpacing: -0.8,
-    color: colors.text,
-  },
-  address: { color: colors.muted, fontSize: 13, lineHeight: 20, marginTop: 9 },
-  summary: {
-    backgroundColor: colors.primaryDark,
-    padding: 19,
-    borderRadius: radius.lg,
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 23,
-    marginBottom: 18,
-  },
-  summaryNum: { color: "#fff", fontSize: 26, fontWeight: "800" },
-  summaryLabel: { color: "#C6DED4", fontSize: 11, marginTop: 3 },
-  summaryLine: {
-    width: 1,
-    height: 42,
-    backgroundColor: "#477568",
-    marginHorizontal: 30,
-  },
-  actions: { flexDirection: "row", gap: 10, marginBottom: 30 },
-  heading: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 14,
-  },
-  sectionTitle: { fontSize: 19, color: colors.text, fontWeight: "800" },
-  count: { fontSize: 12, color: colors.muted },
-  filters: { flexDirection: "row", flexWrap: "wrap", gap: 7, marginBottom: 14 },
-  filter: {
-    borderRadius: 30,
-    paddingHorizontal: 13,
-    paddingVertical: 8,
-    backgroundColor: "#E9EEEA",
-  },
-  filterActive: { backgroundColor: colors.primary },
-  filterText: { color: colors.muted, fontSize: 11, fontWeight: "700" },
-  filterTextActive: { color: "#fff" },
-  classCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    backgroundColor: "#fff",
-    padding: 13,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginBottom: 10,
-  },
-  classIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 13,
-    backgroundColor: "#F1F5F2",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  classIconText: { color: colors.primary, fontSize: 20 },
-  className: { fontWeight: "800", color: colors.text, fontSize: 14 },
-  classMeta: { color: colors.muted, fontSize: 11, marginTop: 5 },
-  smallAction: { padding: 7 },
-  smallActionText: { color: colors.primary, fontSize: 12, fontWeight: "700" },
-  delete: {
-    width: 28,
-    height: 28,
-    borderRadius: 10,
-    backgroundColor: colors.dangerBg,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  deleteText: { color: colors.danger, fontSize: 20 },
-  empty: {
-    backgroundColor: "#fff",
-    padding: 25,
-    borderRadius: 18,
-    alignItems: "center",
-  },
-  emptyTitle: { fontWeight: "800", color: colors.text, fontSize: 15 },
-  emptyText: {
-    textAlign: "center",
-    color: colors.muted,
-    fontSize: 12,
-    lineHeight: 18,
-    marginTop: 7,
-  },
-});

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  ActivityIndicator,
-  Pressable,
-  StyleSheet,
-  Text,
-  ViewStyle,
-} from "react-native";
+import { Button, ButtonText, Spinner } from "@gluestack-ui/themed";
 import { colors, radius } from "../theme/tokens";
 
 export function AppButton({
@@ -19,56 +13,46 @@ export function AppButton({
   onPress: () => void;
   variant?: "primary" | "secondary" | "danger" | "ghost";
   loading?: boolean;
-  style?: ViewStyle;
+  style?: object;
 }) {
+  const backgroundColor =
+    variant === "primary"
+      ? colors.primary
+      : variant === "secondary"
+        ? colors.accent
+        : variant === "danger"
+          ? colors.dangerBg
+          : "transparent";
+  const textColor =
+    variant === "primary"
+      ? "#FFFFFF"
+      : variant === "danger"
+        ? colors.danger
+        : colors.primaryDark;
+
   return (
-    <Pressable
+    <Button
       accessibilityRole="button"
       onPress={onPress}
-      disabled={loading}
-      style={({ pressed }) => [
-        styles.button,
-        variant === "primary" && styles.primary,
-        variant === "secondary" && styles.secondary,
-        variant === "danger" && styles.danger,
-        variant === "ghost" && styles.ghost,
-        pressed && styles.pressed,
-        style,
-      ]}
+      isDisabled={loading}
+      minHeight={48}
+      borderRadius={radius.md}
+      px={18}
+      bg={backgroundColor}
+      flexDirection="row"
+      justifyContent="center"
+      alignItems="center"
+      opacity={loading ? 0.65 : 1}
+      $pressed={{ opacity: 0.78 }}
+      style={style}
     >
       {loading ? (
-        <ActivityIndicator
-          color={variant === "primary" ? "#fff" : colors.primary}
-        />
+        <Spinner color={variant === "primary" ? "#FFFFFF" : colors.primary} />
       ) : (
-        <Text
-          style={[
-            styles.label,
-            variant !== "primary" && styles.labelDark,
-            variant === "danger" && styles.labelDanger,
-          ]}
-        >
+        <ButtonText color={textColor} fontSize={15} fontWeight="$bold">
           {title}
-        </Text>
+        </ButtonText>
       )}
-    </Pressable>
+    </Button>
   );
 }
-const styles = StyleSheet.create({
-  button: {
-    minHeight: 48,
-    borderRadius: radius.md,
-    paddingHorizontal: 18,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  primary: { backgroundColor: colors.primary },
-  secondary: { backgroundColor: colors.accent },
-  danger: { backgroundColor: colors.dangerBg },
-  ghost: { backgroundColor: "transparent" },
-  label: { color: "#FFFFFF", fontSize: 15, fontWeight: "700" },
-  labelDark: { color: colors.primaryDark },
-  labelDanger: { color: colors.danger },
-  pressed: { opacity: 0.78 },
-});
